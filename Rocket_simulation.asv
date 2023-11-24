@@ -1,21 +1,22 @@
 clear
 clc
 % radius of beer keg is 11.125 inches height is 23.325 in 
-
+rocket_diameter = 31.75; % cm = 12.5 in 
+% 
 %width of rocket is 12.5 inches
-
+nose_cone_area= 0.4249501178; % m^2   = 658.674; %in^2
 
 %for nose_z=1:1:20
 %nose_x= 
 %nose_y= 
 %end
 
+%for a tangent ogave nose cone
+Cd_Rocket=0.154;
+Air_Density_launch= 1.24462; % kg/m^3
 
-
-
-
-
-
+Force_Drag_rocket=0;
+Force_Drag_rocket(2,1)=1;
 
 
 
@@ -46,13 +47,13 @@ i=1; %interval
 exhaust_exit_velocity = 2050; %m/s
 
 
-Force_drag= -0; %Newtons
+
 Force_Thrust = M_dot_burn * exhaust_exit_velocity;
 
 Rocket_momentary_mass(1,1) = Mass_Launch; %initializes Momentary rocket mass
 Momentary_gravity_Force(1,1)= Mass_Launch*g;
 
-Force_balance(1,1)= (Momentary_gravity_Force(1,1)) + Force_Thrust + Force_drag;
+Force_balance(1,1)= (Momentary_gravity_Force(1,1)) + Force_Thrust;
 
 Momentary_Position_Z(1,1)=0;
 Momentary_velocity(1,1) = 0;
@@ -62,13 +63,19 @@ Momentary_Position_Z(2,1)=Momentary_Position_Z(1,1) + Momentary_velocity(1,1) +(
 
 for time=1:Burn_time
 Rocket_momentary_mass((time+1),1)=Rocket_momentary_mass(time,1)-M_dot_burn;
-Momentary_gravity_Force((time+1),1)=(Rocket_momentary_mass(time,1))*(g); %(
-Force_balance((time+1),1)= (Momentary_gravity_Force(time,1)) + Force_Thrust + Force_drag;
+Momentary_gravity_Force((time+1),1)=(Rocket_momentary_mass(time,1))*(g); %
+
+Force_Drag_rocket((time+1),1) = (1/2)*(Air_Density_launch)*((Momentary_velocity(time,1))^2)*(Cd_Rocket)*(nose_cone_area);
+
+Force_balance((time+1),1)= (Momentary_gravity_Force(time,1)) + Force_Thrust - Force_Drag_rocket(time,1);
 Momentary_acceleration((time+1),1) = (Force_balance(time+1,1))/(Rocket_momentary_mass(time+1,1));
 Momentary_velocity((time+1),1)= Momentary_velocity(time,1)+ Momentary_acceleration((time+1),1);
 Momentary_Position_Z((time+2),1) = Momentary_Position_Z((time+1),1) + Momentary_velocity((time+1),1) +((1/2)*(Momentary_acceleration((time),1)^2));
+
+
+
 end
-%%
+
 
 
 
@@ -105,16 +112,20 @@ xlabel time(s)
 ylabel Z-axis-displacement(m)
 %%
 while Momentary_Position_Z(time,1)>0
+    disp("time")
+    disp(time)
 Rocket_momentary_mass(time+1,1)=(Mass_Final);
 Momentary_gravity_Force((time+1),1)=(Rocket_momentary_mass(time,1))*(g); 
-Force_balance((time+1),1)= (Momentary_gravity_Force(time,1))+ Force_drag;
+% force of drag is calculated based on previous second's velocity
+Force_Drag_rocket((time+1),1) = (1/2)*(Air_Density_launch)*((Momentary_velocity(time,1))^2)*(Cd_Rocket)*(nose_cone_area);
+
+Force_balance((time+1),1)= (Momentary_gravity_Force(time,1))+ Force_Drag_rocket(time,1);
 Momentary_acceleration((time+1),1) = (Force_balance(time+1,1))/(Rocket_momentary_mass(time+1,1));
 Momentary_velocity((time+1),1)= Momentary_velocity(time,1)+ Momentary_acceleration((time+1),1);
 Momentary_Position_Z((time+2),1) = Momentary_Position_Z((time+1),1) + Momentary_velocity((time+1),1) +((1/2)*(Momentary_acceleration((time),1)^2));
 time=time+1;
 
 
-%Force_Drag_rocket=(1/2)*(Air_Density_launch)*((Momentary_velocity((time+1),1))^2)*(Cd_Rocket)*(Area_Rocket);
 
 
 
