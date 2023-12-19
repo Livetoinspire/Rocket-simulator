@@ -1,5 +1,13 @@
-12/18/2023
 
+
+11/27/2023
+Added beginnings of terminal velocity though program too buggy to run with new code
+
+
+
+
+
+12/18/2023
 added function to take realistic mass from fuel and lox from volume and density
 added function to easily convert all non SI units to SI
 working on function to create a reasonable terminal velocity for the rockets unpowered phase
