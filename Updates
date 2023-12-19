@@ -1,0 +1,12 @@
+12/18/2023
+
+added function to take realistic mass from fuel and lox from volume and density
+added function to easily convert all non SI units to SI
+working on function to create a reasonable terminal velocity for the rockets unpowered phase
+creating function to begin to take geometry from equation models to be used in mass calculations for the rocket.
+
+
+
+
+
+
