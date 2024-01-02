@@ -1,49 +1,24 @@
 %%
 clear
 clc
-
-Kg=1;
-lb=2;
-N=1;
-Newton=3;
-lbf=4;
-ft=5;
-feet=5;
-C=6;
-celcius=6;
-minutes=7;
-amperes=1;
-amps=1;
-cm=9;
-centimeters=9;
-mm=10;
-millimeters=10;
-liter=11;
-L=11;
-kg_m_3=1;
-kilogram_per_meter_cubed=1;
-g_cm_3=13;
-gram_per_meter_cubed=13;
-Fahrenheit=14;
-F=14;
-K=1;
-Kelvin = 1;
-Bar=17;
-bar=17;
-atm=18;
-gal = 19;
-gallons = 19;
-inches=20 ;
-%%
-       
+%Variable initialization
+[Kg,kg,lb,N,Newton,lbf,ft,feet,C,celcius,minutes,seconds,amperes,amps,cm,...
+    centimeters,mm,millimeters,liters,L, kg_m_3,kilogram_per_meter_cubed,...
+    g_cm_3,gram_per_meter_cubed,Fahrenheit,F,K,Kelvin,Bar,bar,atm,gal,...
+    gallons,inches,in,cm_cubed,psi,Pounds_Per_Square_Inch,meter,Meter...
+    ,M,m,kilometers,km,Km,Kilometers,g0,R,Molar_Mass_Air] = myvariables();
 
 
 % total time burning fuel and lox
-Burn_time = 10; % seconds
-
-
-
-
+Burn_time = 20; % seconds
+time=1 ;
+RelativeHumidity= 0.10; % put in terms of decimals instead of percentage i.e. 10 percent is .10
+Vapor_Pressure=14.4;
+% 
+% 
+% Actual_Vapor_Pressure = Vapor_Pressure * Relative_Humidity;
+% Pressure_Dry_Air = Total_Air_Pressure - Actual_Vapor_Pressure;
+% Air_density = (Pressure_Dry_Air/(R_Dry_Air*Air_Temperature));
 
 % radius of beer keg is 11.125 inches height is 23.325 in 
 rocket_diameter = unitconversion(12.5, inches); % cm = 12.5 in 
@@ -58,12 +33,6 @@ Air_Density_launch= 1.24462; % kg/m^3
 Force_Drag_rocket=0;
 Force_Drag_rocket(2,1)=1;
 
-
-
-
-
-
-
 % starting point meters
 z_0 = 0;
 % final altitude meters = 25000 feet
@@ -75,16 +44,11 @@ M_Rocket_empty = 1000; %kg
 % mass fuel
 
 
-
-
 Volume_fuel = unitconversion(7.75, gallons); %gallons
 Volume_lox  = unitconversion(7.75, gallons); %gallons
 
 density_fuel = unitconversion(814.819724, kg_m_3);
 density_lox  = unitconversion(1141, kg_m_3);
-
-
-
 
 
 M_Fuel = Volume_fuel*density_fuel; %kg
@@ -97,12 +61,6 @@ Mass_burned = M_lox+M_Fuel;
 M_dot_burn = ((M_lox+M_Fuel)/Burn_time); % burn_rate
 i=1; %interval
 exhaust_exit_velocity = 2050; %m/s
-
-
-
-
-
-
 
 
 Force_Thrust = M_dot_burn * exhaust_exit_velocity;
@@ -118,7 +76,7 @@ Momentary_acceleration(1,1)=(Force_balance(1,1))/(Rocket_momentary_mass(1,1));
 Momentary_Position_Z(2,1)=Momentary_Position_Z(1,1) + Momentary_Velocity_Z(1,1) +((1/2)*(Momentary_acceleration(1,1))^2);
 
 
-for time=1:Burn_time
+while time<Burn_time
 Rocket_momentary_mass((time+1),1)=Rocket_momentary_mass(time,1)-M_dot_burn;
 Momentary_gravity_Force((time+1),1)=(Rocket_momentary_mass(time,1))*(g); %
 
@@ -129,8 +87,8 @@ Momentary_acceleration((time+1),1) = (Force_balance(time+1,1))/(Rocket_momentary
 Momentary_Velocity_Z((time+1),1)= Momentary_Velocity_Z(time,1)+ Momentary_acceleration((time+1),1);
 Momentary_Position_Z((time+2),1) = Momentary_Position_Z((time+1),1) + Momentary_Velocity_Z((time+1),1) +((1/2)*(Momentary_acceleration((time),1)^2));
 
-
-
+i=i+1;
+time=time+1;
 end
 
 
@@ -174,44 +132,52 @@ plot((1:1:total_time),Force_Drag_rocket)
 xlabel time(s)
 ylabel Force-Drag-rocket
 
+% %%
+% while Momentary_Velocity_Z(time,1)>0
+%     disp("time")
+%     disp(time)
+% Rocket_momentary_mass(time+1,1)=(Mass_Final);
+% Momentary_gravity_Force((time+1),1)=(Rocket_momentary_mass(time,1))*(g); 
+% % force of drag is calculated based on previous second's velocity
+% %Force_Drag_rocket((time+1),1) = (1/2)*(Air_Density_launch)*((Momentary_Velocity_Z(time,1))^2)*(Cd_Rocket)*(nose_cone_area);
+% 
+% % this piece of code adds terminal velocity 
+% % if -(Momentary_gravity_Force(time,1)) > Force_Drag_rocket(time,1)
+% %     Force_balance((time+1),1)= (Momentary_gravity_Force(time,1))  Force_Drag_rocket(time,1);
+% % else
+% %     Force_balance((time+1),1)=0;
+% % end
+% 
+% Force_balance((time+1),1)= (Momentary_gravity_Force(time,1)); % Force_Drag_rocket(time,1);
+% Momentary_acceleration_Z((time+1),1) = (Force_balance(time+1,1))/(Rocket_momentary_mass(time+1,1));
+% Momentary_Velocity_Z((time+1),1)= Momentary_Velocity_Z(time+1,1)+ Momentary_acceleration((time+1),1);
+% Momentary_Position_Z((time+2),1) = Momentary_Position_Z((time+1),1) + Momentary_Velocity_Z((time+1),1) +((1/2)*(Momentary_acceleration((time),1)^2));
+% time=time+1;
+% 
+% 
+% 
+% 
+% 
+% end
 
 
-%%
-while Momentary_Velocity_Z(time,1)>0
-    disp("time")
-    disp(time)
+
+
+while Momentary_Position_Z(time,1)>0
 Rocket_momentary_mass(time+1,1)=(Mass_Final);
 Momentary_gravity_Force((time+1),1)=(Rocket_momentary_mass(time,1))*(g); 
 % force of drag is calculated based on previous second's velocity
 Force_Drag_rocket((time+1),1) = (1/2)*(Air_Density_launch)*((Momentary_Velocity_Z(time,1))^2)*(Cd_Rocket)*(nose_cone_area);
-
-% this piece of code adds terminal velocity 
-% if -(Momentary_gravity_Force(time,1)) > Force_Drag_rocket(time,1)
-%     Force_balance((time+1),1)= (Momentary_gravity_Force(time,1))  Force_Drag_rocket(time,1);
-% else
-%     Force_balance((time+1),1)=0;
-% end
-
-Force_balance((time+1),1)= (Momentary_gravity_Force(time,1)); % Force_Drag_rocket(time,1);
-Momentary_acceleration_Z((time+1),1) = (Force_balance(time+1,1))/(Rocket_momentary_mass(time+1,1));
+Force_balance((time+1),1)= (Momentary_gravity_Force(time,1))+ Force_Drag_rocket(time,1);
+Momentary_acceleration((time+1),1) = (Force_balance(time+1,1))/(Rocket_momentary_mass(time+1,1));
 Momentary_Velocity_Z((time+1),1)= Momentary_Velocity_Z(time,1)+ Momentary_acceleration((time+1),1);
 Momentary_Position_Z((time+2),1) = Momentary_Position_Z((time+1),1) + Momentary_Velocity_Z((time+1),1) +((1/2)*(Momentary_acceleration((time),1)^2));
 time=time+1;
-
-
-
-
-
 end
 
-
-
-
-
-
-
-
 %%
+    disp("time")
+    disp(time)
 total_time=length(Momentary_Velocity_Z);
 time_graph_start=1;
 figure 
@@ -244,7 +210,62 @@ ylabel Z-axis-displacement(m)
 
 %%
 
-
+function [Kg,kg,lb,N,Newton,lbf,ft,feet,C,celcius,minutes,seconds,amperes,...
+    amps,cm,centimeters,mm,millimeters,liters,L, kg_m_3,...
+    kilogram_per_meter_cubed,g_cm_3,gram_per_meter_cubed,Fahrenheit,...
+    F,K,Kelvin,Bar,bar,atm,gal,gallons,inches,in,cm_cubed,psi,...
+    Pounds_Per_Square_Inch,meter,Meter,M,m,kilometers,km,Km,Kilometers,...
+    g0,R,Molar_Mass_Air] = myvariables()
+kg=1;
+Kg=1;
+lb=2;
+N=1;
+Newton=1;
+lbf=4;
+ft=5;
+feet=5;
+C=6;
+celcius=6;
+minutes=7;
+seconds=1;
+amperes=1;
+amps=1;
+meter=1;
+Meter=1;
+M=1;
+m=1;
+cm=9;
+centimeters=9;
+mm=10;
+millimeters=10;
+liters=11;
+L=11;
+kg_m_3=1;
+kilogram_per_meter_cubed=1;
+g_cm_3=13;
+gram_per_meter_cubed=13;
+Fahrenheit=14;
+F=14;
+K=1;
+Kelvin = 1;
+Bar=17;
+bar=17;
+atm=18;
+gal = 19;
+gallons = 19;
+inches=20 ;
+in=20;
+cm_cubed=21;
+psi=22;
+Pounds_Per_Square_Inch=22;
+Kilometers= 23;
+kilometers= 23;
+km=23;
+Km=23;
+g0=9.80665; %m/s gravity constant
+R=8.314; %J/mol Real gas constant
+Molar_Mass_Air= 0.0289644; %[kg/mol]
+end
 function SI = unitconversion(number, Unit)
     switch Unit 
         case 1 % KG to KG
@@ -281,12 +302,15 @@ function SI = unitconversion(number, Unit)
             SI = number*0.0254;
         case 21 % cm^3 to m^3
             SI = number*0.000001;
+        case 22 % PSI to N/(M^2)
+            SI = 6894.76;
         otherwise 
             SI=number;
     end
 end
-
-
+function [interpolated_Value] = Linear_interpolator(X1,X2,X3,Y1,Y3)
+interpolated_Value=(((X2-X1)/(X3-X1))*(Y3-Y1)+Y1);
+end
 
 
 
